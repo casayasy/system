@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proveedores</title>
+    <link rel="icon" type="image/png" href="img/working.png">
+          
+    <!-- ESTILOS DEL MENU -->
+    <link href="menu/styles.css" rel="stylesheet" />
+  
+    <!-- BOOTSTRAP ICONS -->
+    <link rel="stylesheet" href="bt-icons/bootstrap-icons.min.css">
+
+    <!-- DATATABLES -->
+    <link rel="stylesheet" href="dt/datatables.min.css">
+    <link rel="stylesheet" href="dt/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="dt/buttons.dataTables.min.css">
+
+    <!-- ALERTIFYJS -->
+    <link rel="stylesheet" href="alert/alertify.min.css">
+    <link rel="stylesheet" href="alert/themes/default.min.css">
+    <script src="alert/alertify.min.js"></script>
+</head>
+<body>
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand ps-3" href="menu.html">Volver al menú</a>
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="bi bi-list"></i></button>
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-person-fill"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#!">Configuración</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <a class="nav-link" href="menu.html">
+                            <div class="sb-nav-link-icon"><i class="bi bi-house-door"></i></div>
+                            Menú Principal
+                        </a>
+                        <a class="nav-link" href="proveedores.html">
+                            <div class="sb-nav-link-icon"><i class="bi bi-people"></i></div>
+                            Proveedores
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Iniciado por:</div>
+                    <div id="usuario">Usuario</div>
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-2">Proveedores</h1>
+                    <div class="row">
+                        <table id="tabla_proveedores" class="display compact" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Id Proveedor</th>
+                                    <th>Nombre</th>
+                                    <th>Dirección</th>
+                                    <th>Celular</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Proveedor -->
+    <div class="modal fade" id="modalNuevoProveedor" tabindex="-1" aria-labelledby="modalProveedorLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <form id="formNuevoProveedor" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalProveedorLabel">Agregar Nuevo Proveedor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label">Nombre completo</label>
+                        <input type="text" id="nombre" class="form-control text-uppercase" required minlength="6" maxlength="50">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" id="direccion" class="form-control text-uppercase" required minlength="6" maxlength="50">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Celular</label>
+                        <input type="text" id="celular" class="form-control" required minlength="6" maxlength="12">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Proveedor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Proveedor -->
+    <div class="modal fade" id="modalEditarProveedor" tabindex="-1" aria-labelledby="modalEditarProveedorLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <form id="formEditarProveedor" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarProveedorLabel">Editar Proveedor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit_idproveedor">
+                    <div class="mb-2">
+                        <label class="form-label">Nombre completo</label>
+                        <input type="text" id="edit_nombre" class="form-control text-uppercase" required minlength="6" maxlength="50">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" id="edit_direccion" class="form-control text-uppercase" required minlength="6" maxlength="50">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Celular</label>
+                        <input type="text" id="edit_celular" class="form-control" required minlength="6" maxlength="12">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+  <!-- Importar el archivo JavaScript -->
+  <script src="js/menu.js"></script>
+  <script src="js/bdP.js"></script>
+  <script src="js/sistemFunctions.js"></script>
+  <script src="menu/bootstrap.bundle.min.js"></script>
+  <script src="menu/scripts.js"></script>
+  <!-- DATATABLES -->
+  <script src="dt/jquery-3.7.1.js"></script>
+  <script src="dt/datatables.min.js"></script>
+  <script src="dt/jquery.dataTables.min.js"></script>
+  <!-- DATATABLES Buttons extension -->
+  <script src="dt/dataTables.buttons.min.js"></script>
+  <script src="dt/buttons.print.min.js"></script>
+  <script src="dt/buttons.html5.min.js"></script>
+  <!-- DATATABLES JSZip y pdfmake para exportar -->
+  <script src="dt/jszip.min.js"></script>
+  <script src="dt/pdfmake.min.js"></script>
+  <script src="dt/vfs_fonts.js"></script>
+  <!-- DATATABLES Idioma Español -->
+  <script src="dt/es-ES.js"></script>
+<script>
+
+    if(!sessionStorage.getItem("sesionActiva")){
+      localStorage.removeItem("nomUsuario");
+      localStorage.removeItem("rolUsuario");
+      window.location.href = "Pagerror.html";
+    }
+
+         // obtiene el array de objetos desde el localstorage
+        var usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+        document.getElementById('usuario').textContent = localStorage.getItem("nomUsuario") || "Usuario";
+
+        let proveedores = JSON.parse(localStorage.getItem("proveedores")) || [];
+        let tabla;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarTablaProveedores();
+
+            // Evento para agregar un nuevo proveedor
+            document.getElementById('formNuevoProveedor').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const nuevoProveedor = {
+                    idproveedor: obtenerSiguienteId(proveedores),
+                    nombre: document.getElementById('nombre').value.trim().toUpperCase(),
+                    direccion: document.getElementById('direccion').value.trim(),
+                    celular: document.getElementById('celular').value.trim()
+                };
+                proveedores.push(nuevoProveedor);
+                guardarProveedores(proveedores);
+                tabla.row.add(nuevoProveedor).draw();
+                this.reset();
+                $('#modalNuevoProveedor').modal('hide');
+                alertify.success("Proveedor agregado correctamente.");
+            });
+
+            // Evento para editar un proveedor
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.btn-editar')) {
+                    const id = parseInt(e.target.closest('.btn-editar').dataset.id);
+                    const proveedor = proveedores.find(p => p.idproveedor === id);
+                    if (proveedor) {
+                        document.getElementById('edit_idproveedor').value = proveedor.idproveedor;
+                        document.getElementById('edit_nombre').value = proveedor.nombre;
+                        document.getElementById('edit_direccion').value = proveedor.direccion;
+                        document.getElementById('edit_celular').value = proveedor.celular;
+                        $('#modalEditarProveedor').modal('show');
+                    }
+                }
+            });
+
+            document.getElementById('formEditarProveedor').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const id = parseInt(document.getElementById('edit_idproveedor').value);
+                const index = proveedores.findIndex(p => p.idproveedor === id);
+                if (index !== -1) {
+                    proveedores[index] = {
+                        idproveedor: id,
+                        nombre: document.getElementById('edit_nombre').value.trim().toUpperCase(),
+                        direccion: document.getElementById('edit_direccion').value.trim(),
+                        celular: document.getElementById('edit_celular').value.trim()
+                    };
+                    guardarProveedores(proveedores);
+                    tabla.clear().rows.add(proveedores).draw();
+                    $('#modalEditarProveedor').modal('hide');
+                    alertify.success("Proveedor actualizado correctamente.");
+                }
+            });
+
+            // Evento para eliminar un proveedor
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.btn-eliminar')) {
+                    const id = parseInt(e.target.closest('.btn-eliminar').dataset.id);
+                    alertify.confirm("Eliminar proveedor", "¿Estás seguro de eliminar este proveedor?",
+                        function () {
+                            proveedores = proveedores.filter(p => p.idproveedor !== id);
+                            guardarProveedores(proveedores);
+                            tabla.clear().rows.add(proveedores).draw();
+                            alertify.success("Proveedor eliminado correctamente.");
+                        },
+                        function () {
+                            alertify.error("Eliminación cancelada.");
+                        }
+                    ).set('labels', { ok: 'Sí', cancel: 'No' });
+                }
+            });
+        });
+
+        function cargarTablaProveedores() {
+            if ($.fn.DataTable.isDataTable('#tabla_proveedores')) {
+                $('#tabla_proveedores').DataTable().destroy();
+            }
+
+            tabla = new DataTable("#tabla_proveedores", {
+                data: proveedores,
+                columns: [
+                    { data: 'idproveedor', title: 'Id Proveedor' },
+                    { data: 'nombre', title: 'Nombre' },
+                    { data: 'direccion', title: 'Dirección' },
+                    { data: 'celular', title: 'Celular' },
+                    {
+                        data: null,
+                        title: 'Acciones',
+                        render: function (data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-warning me-1 btn-editar" data-id="${row.idproveedor}"><i class="bi bi-pencil-square"></i></button>
+                                <button class="btn btn-sm btn-danger btn-eliminar" data-id="${row.idproveedor}"><i class="bi bi-trash"></i></button>
+                            `;
+                        }
+                    }
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'print',
+                        text: '<i class="bi bi-printer"></i> Imprimir'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="bi bi-filetype-xlsx"></i> Exportar a Excel'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: '<i class="bi bi-filetype-pdf"></i> Exportar a PDF'
+                    },
+                    {
+                        text: '<i class="bi bi-file-earmark-plus"></i> Nuevo proveedor',
+                        className: 'btn btn-sm btn-primary',
+                        action: function () {
+                            $('#modalNuevoProveedor').modal('show');
+                        }
+                    }
+                ],
+                responsive: true,
+                language: {
+                    url: "dt/es-ES.js"
+                   // url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                }
+            });
+        }
+
+        function guardarProveedores(data) {
+            localStorage.setItem('proveedores', JSON.stringify(data));
+            tabla.clear().rows.add(data).draw();
+        }
+
+        function obtenerSiguienteId(proveedores) {
+            if (proveedores.length === 0) {
+                return 1;
+            } else {
+                const maxId = Math.max(...proveedores.map(p => p.idproveedor || 0));
+                return maxId + 1;
+            }
+        }
+
+        // function cerrarSesion() {
+        //     alertify.confirm("Cerrar sesión", "¿Estás seguro de que deseas cerrar sesión?",
+        //         function () {
+        //             localStorage.removeItem("nomUsuario");
+        //             window.location.href = "login.html";
+        //         },
+        //         function () {
+        //             alertify.error("Cancelado");
+        //         }
+        //     ).set('labels', { ok: 'Sí', cancel: 'No' });
+        // }
+    </script>
+</body>
+</html>
+``` 

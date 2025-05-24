@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bancos</title>
+    <link rel="icon" type="image/png" href="img/working.png">
+          
+    <!-- ESTILOS DEL MENU -->
+    <link href="menu/styles.css" rel="stylesheet" />
+  
+    <!-- BOOTSTRAP ICONS -->
+    <link rel="stylesheet" href="bt-icons/bootstrap-icons.min.css">
+
+    <!-- DATATABLES -->
+    <link rel="stylesheet" href="dt/datatables.min.css">
+    <link rel="stylesheet" href="dt/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="dt/buttons.dataTables.min.css">
+
+    <!-- ALERTIFYJS -->
+    <link rel="stylesheet" href="alert/alertify.min.css">
+    <link rel="stylesheet" href="alert/themes/default.min.css">
+    <script src="alert/alertify.min.js"></script>
+</head>
+<body>
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand ps-3" href="menu.html">Volver al menú</a>
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="bi bi-list"></i></button>
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-person-fill"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#!">Configuración</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <a class="nav-link" href="menu.html">
+                            <div class="sb-nav-link-icon"><i class="bi bi-house-door"></i></div>
+                            Menú Principal
+                        </a>
+                        <a class="nav-link" href="bancos.html">
+                            <div class="sb-nav-link-icon"><i class="bi bi-bank"></i></div>
+                            Bancos
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Iniciado por:</div>
+                    <div id="usuario">Usuario</div>
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-2">Bancos</h1>
+                    <div class="row">
+                        <table id="tabla_bancos" class="display compact" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Id Banco</th>
+                                    <th>Nombre</th>
+                                    <th>Dirección</th>
+                                    <th>Telefono</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Banco -->
+    <div class="modal fade" id="modalNuevoBanco" tabindex="-1" aria-labelledby="modalBancoLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <form id="formNuevoBanco" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalBancoLabel">Agregar Nuevo Banco</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" id="nombre" class="form-control text-uppercase" required minlength="2" maxlength="50">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" id="direccion" class="form-control text-uppercase" required minlength="6" maxlength="100">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" id="telefono" class="form-control" required minlength="6" maxlength="15">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Banco</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Banco -->
+    <div class="modal fade" id="modalEditarBanco" tabindex="-1" aria-labelledby="modalEditarBancoLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <form id="formEditarBanco" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarBancoLabel">Editar Banco</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit_idbanco">
+                    <div class="mb-2">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" id="edit_nombre" class="form-control text-uppercase" required minlength="2" maxlength="50">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" id="edit_direccion" class="form-control text-uppercase" required minlength="6" maxlength="100">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" id="edit_telefono" class="form-control" required minlength="6" maxlength="15">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<!-- Importar el archivo JavaScript -->
+<script src="js/menu.js"></script>
+<script src="js/bdP.js"></script>
+<script src="js/sistemFunctions.js"></script>
+<script src="menu/bootstrap.bundle.min.js"></script>
+<script src="menu/scripts.js"></script>
+<!-- DATATABLES -->
+<script src="dt/jquery-3.7.1.js"></script>
+<script src="dt/datatables.min.js"></script>
+<script src="dt/jquery.dataTables.min.js"></script>
+<!-- DATATABLES Buttons extension -->
+<script src="dt/dataTables.buttons.min.js"></script>
+<script src="dt/buttons.print.min.js"></script>
+<script src="dt/buttons.html5.min.js"></script>
+<!-- DATATABLES JSZip y pdfmake para exportar -->
+<script src="dt/jszip.min.js"></script>
+<script src="dt/pdfmake.min.js"></script>
+<script src="dt/vfs_fonts.js"></script>
+<!-- DATATABLES Idioma Español -->
+<script src="dt/es-ES.js"></script>
+ 
+<script>
+    if(!sessionStorage.getItem("sesionActiva")){
+      localStorage.removeItem("nomUsuario");
+      localStorage.removeItem("rolUsuario");
+      window.location.href = "Pagerror.html";
+    }
+        // obtiene el array de objetos desde el localstorage
+        var usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+        document.getElementById('usuario').textContent = localStorage.getItem("nomUsuario") || "Usuario";
+
+
+        let bancos = JSON.parse(localStorage.getItem("bancos")) || [];
+        let tabla;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarTablaBancos();
+
+            // Evento para agregar un nuevo banco
+            document.getElementById('formNuevoBanco').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const nuevoBanco = {
+                    idbanco: obtenerSiguienteId(bancos),
+                    nombre: document.getElementById('nombre').value.trim().toUpperCase(),
+                    direccion: document.getElementById('direccion').value.trim(),
+                    telefono: document.getElementById('telefono').value.trim()
+                };
+                bancos.push(nuevoBanco);
+                guardarBancos(bancos);
+                tabla.row.add(nuevoBanco).draw();
+                this.reset();
+                $('#modalNuevoBanco').modal('hide');
+                alertify.success("Banco agregado correctamente.");
+            });
+
+            // Evento para editar un banco
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.btn-editar')) {
+                    const id = parseInt(e.target.closest('.btn-editar').dataset.id);
+                    const banco = bancos.find(b => b.idbanco === id);
+                    if (banco) {
+                        document.getElementById('edit_idbanco').value = banco.idbanco;
+                        document.getElementById('edit_nombre').value = banco.nombre;
+                        document.getElementById('edit_direccion').value = banco.direccion;
+                        document.getElementById('edit_telefono').value = banco.telefono;
+                        $('#modalEditarBanco').modal('show');
+                    }
+                }
+            });
+
+            document.getElementById('formEditarBanco').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const id = parseInt(document.getElementById('edit_idbanco').value);
+                const index = bancos.findIndex(b => b.idbanco === id);
+                if (index !== -1) {
+                    bancos[index] = {
+                        idbanco: id,
+                        nombre: document.getElementById('edit_nombre').value.trim().toUpperCase(),
+                        direccion: document.getElementById('edit_direccion').value.trim(),
+                        telefono: document.getElementById('edit_telefono').value.trim()
+                    };
+                    guardarBancos(bancos);
+                    tabla.clear().rows.add(bancos).draw();
+                    $('#modalEditarBanco').modal('hide');
+                    alertify.success("Banco actualizado correctamente.");
+                }
+            });
+
+            // Evento para eliminar un banco
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.btn-eliminar')) {
+                    const id = parseInt(e.target.closest('.btn-eliminar').dataset.id);
+                    alertify.confirm("Eliminar banco", "¿Estás seguro de eliminar este banco?",
+                        function () {
+                            bancos = bancos.filter(b => b.idbanco !== id);
+                            guardarBancos(bancos);
+                            tabla.clear().rows.add(bancos).draw();
+                            alertify.success("Banco eliminado correctamente.");
+                        },
+                        function () {
+                            alertify.error("Eliminación cancelada.");
+                        }
+                    ).set('labels', { ok: 'Sí', cancel: 'No' });
+                }
+            });
+        });
+
+        function cargarTablaBancos() {
+            if ($.fn.DataTable.isDataTable('#tabla_bancos')) {
+                $('#tabla_bancos').DataTable().destroy();
+            }
+
+            tabla = new DataTable("#tabla_bancos", {
+                data: bancos,
+                columns: [
+                    { data: 'idbanco', title: 'Id Banco' },
+                    { data: 'nombre', title: 'Nombre' },
+                    { data: 'direccion', title: 'Dirección' },
+                    { data: 'telefono', title: 'Teléfono' },
+                    {
+                        data: null,
+                        title: 'Acciones',
+                        render: function (data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-warning me-1 btn-editar" data-id="${row.idbanco}"><i class="bi bi-pencil-square"></i></button>
+                                <button class="btn btn-sm btn-danger btn-eliminar" data-id="${row.idbanco}"><i class="bi bi-trash"></i></button>
+                            `;
+                        }
+                    }
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'print',
+                        text: '<i class="bi bi-printer"></i> Imprimir'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="bi bi-filetype-xlsx"></i> Exportar a Excel'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: '<i class="bi bi-filetype-pdf"></i> Exportar a PDF'
+                    },
+                    {
+                        text: '<i class="bi bi-file-earmark-plus"></i> Nuevo banco',
+                        className: 'btn btn-sm btn-primary',
+                        action: function () {
+                            $('#modalNuevoBanco').modal('show');
+                        }
+                    }
+                ],
+                responsive: true,
+                language: {
+                    url: "dt/es-ES.js"
+                }
+            });
+        }
+
+        function guardarBancos(data) {
+            localStorage.setItem('bancos', JSON.stringify(data));
+            tabla.clear().rows.add(data).draw();
+        }
+
+        function obtenerSiguienteId(bancos) {
+            if (bancos.length === 0) {
+                return 1;
+            } else {
+                const maxId = Math.max(...bancos.map(b => b.idbanco || 0));
+                return maxId + 1;
+            }
+        }
+    </script>
+</body>
+</html>

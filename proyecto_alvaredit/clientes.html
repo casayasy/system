@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes</title>
+    <link rel="icon" type="image/png" href="img/working.png">
+          
+    <!-- ESTILOS DEL MENU -->
+    <link href="menu/styles.css" rel="stylesheet" />
+  
+    <!-- BOOTSTRAP ICONS -->
+    <link rel="stylesheet" href="bt-icons/bootstrap-icons.min.css">
+
+    <!-- DATATABLES -->
+    <link rel="stylesheet" href="dt/datatables.min.css">
+    <link rel="stylesheet" href="dt/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="dt/buttons.dataTables.min.css">
+
+    <!-- ALERTIFYJS -->
+    <link rel="stylesheet" href="alert/alertify.min.css">
+    <link rel="stylesheet" href="alert/themes/default.min.css">
+    <script src="alert/alertify.min.js"></script>
+</head>
+<body>
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand ps-3" href="menu.html">Volver al menú</a>
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="bi bi-list"></i></button>
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-person-fill"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#!">Configuración</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <a class="nav-link" href="menu.html">
+                            <div class="sb-nav-link-icon"><i class="bi bi-house-door"></i></div>
+                            Menú Principal
+                        </a>
+                        <a class="nav-link" href="clientes.html">
+                            <div class="sb-nav-link-icon"><i class="bi bi-people"></i></div>
+                            Clientes
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Iniciado por:</div>
+                    <div id="usuario">Usuario</div>
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-2">Clientes</h1>
+                    <div class="row">
+                        <table id="tabla_clientes" class="display compact" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Id Clientes</th>
+                                    <th>RUC_CI</th>
+                                    <th>Nombre</th>
+                                    <th>Apellidos</th>
+                                    <th>Dirección</th>
+                                    <th>Celular</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Cliente -->
+    <div class="modal fade" id="modalNuevoCliente" tabindex="-1" aria-labelledby="modalClienteLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <form id="formNuevoCliente" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalClienteLabel">Agregar Nuevo Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label">RUC/CI</label>
+                        <input type="text" 
+                            inputmode="numeric"
+                            pattern="^\d+(?:-\d)?$"
+                            class="form-control" 
+                            id="ciruc" 
+                            minlength="6" 
+                            maxlength="15"
+                            required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" id="nombre" class="form-control text-uppercase" required minlength="2" maxlength="50">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Apellido</label>
+                        <input type="text" id="apellido" class="form-control text-uppercase" required minlength="2" maxlength="50">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" id="direccion" class="form-control text-uppercase" required minlength="6" maxlength="100">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Celular</label>
+                        <input type="text" id="celular" class="form-control" required minlength="6" maxlength="15">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Cliente -->
+    <div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-labelledby="modalEditarClienteLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <form id="formEditarCliente" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarClienteLabel">Editar Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit_idcliente">
+                    <div class="mb-2">
+                        <label class="form-label">RUC/CI</label>
+                        <input type="number" id="edit_ciruc" class="form-control" required minlength="6" maxlength="15">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" id="edit_nombre" class="form-control text-uppercase" required minlength="2" maxlength="50">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Apellido</label>
+                        <input type="text" id="edit_apellido" class="form-control text-uppercase" required minlength="2" maxlength="50">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" id="edit_direccion" class="form-control text-uppercase" required minlength="6" maxlength="100">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Celular</label>
+                        <input type="text" id="edit_celular" class="form-control" required minlength="6" maxlength="15">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+<!-- Importar el archivo JavaScript -->
+<script src="js/menu.js"></script>
+<script src="js/bdP.js"></script>
+<script src="js/sistemFunctions.js"></script>
+<script src="menu/bootstrap.bundle.min.js"></script>
+<script src="menu/scripts.js"></script>
+<!-- DATATABLES -->
+<script src="dt/jquery-3.7.1.js"></script>
+<script src="dt/datatables.min.js"></script>
+<script src="dt/jquery.dataTables.min.js"></script>
+<!-- DATATABLES Buttons extension -->
+<script src="dt/dataTables.buttons.min.js"></script>
+<script src="dt/buttons.print.min.js"></script>
+<script src="dt/buttons.html5.min.js"></script>
+<!-- DATATABLES JSZip y pdfmake para exportar -->
+<script src="dt/jszip.min.js"></script>
+<script src="dt/pdfmake.min.js"></script>
+<script src="dt/vfs_fonts.js"></script>
+<!-- DATATABLES Idioma Español -->
+<script src="dt/es-ES.js"></script>
+
+
+<script>
+
+    if(!sessionStorage.getItem("sesionActiva")){
+      localStorage.removeItem("nomUsuario");
+      localStorage.removeItem("rolUsuario");
+      window.location.href = "Pagerror.html";
+    }
+         // obtiene el array de objetos desde el localstorage
+         var usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+        document.getElementById('usuario').textContent = localStorage.getItem("nomUsuario") || "Usuario";
+
+        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+        let tabla;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarTablaClientes();
+
+            // Evento para agregar un nuevo cliente
+            document.getElementById('formNuevoCliente').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const nuevoCliente = {
+                    idcliente: obtenerSiguienteId(clientes),
+                    ciruc: document.getElementById('ciruc').value.trim(),
+                    nombre: document.getElementById('nombre').value.trim().toUpperCase(),
+                    apellido: document.getElementById('apellido').value.trim().toUpperCase(),
+                    direccion: document.getElementById('direccion').value.trim(),
+                    celular: document.getElementById('celular').value.trim()
+                };
+
+                // Validar si el cliente ya existe
+                const existeCliente = clientes.some(c => c.ciruc === nuevoCliente.ciruc);
+                if (existeCliente) {
+                    alertify.error("El cliente ya existe.");
+                    return;
+                }
+
+                clientes.push(nuevoCliente);
+                guardarClientes(clientes);
+                //tabla.row.add(nuevoCliente).draw();
+                this.reset();
+                
+                $('#modalNuevoCliente').modal('hide');
+                alertify.success("Cliente agregado correctamente.");
+            });
+
+            // Evento para editar un cliente
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.btn-editar')) {
+                    const id = parseInt(e.target.closest('.btn-editar').dataset.id);
+                    const cliente = clientes.find(c => c.idcliente === id);
+                    if (cliente) {
+                        document.getElementById('edit_idcliente').value = cliente.idcliente;
+                        document.getElementById('edit_ciruc').value = cliente.ciruc;
+                        document.getElementById('edit_nombre').value = cliente.nombre;
+                        document.getElementById('edit_apellido').value = cliente.apellido;
+                        document.getElementById('edit_direccion').value = cliente.direccion;
+                        document.getElementById('edit_celular').value = cliente.celular;
+                        $('#modalEditarCliente').modal('show');
+                    }
+                }
+            });
+
+            document.getElementById('formEditarCliente').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const id = parseInt(document.getElementById('edit_idcliente').value);
+                const index = clientes.findIndex(c => c.idcliente === id);
+                if (index !== -1) {
+                    const rucAnt = clientes[index].ciruc;
+                    clientes[index] = {
+                        idcliente: id,
+                        ciruc: document.getElementById('edit_ciruc').value.trim(),
+                        nombre: document.getElementById('edit_nombre').value.trim().toUpperCase(),
+                        apellido: document.getElementById('edit_apellido').value.trim().toUpperCase(),
+                        direccion: document.getElementById('edit_direccion').value.trim(),
+                        celular: document.getElementById('edit_celular').value.trim()
+                    };
+
+                    // Validar si el cliente ya existe
+                    const existeCliente = clientes.some(c => c.ciruc === clientes[index].ciruc && c.ciruc !== rucAnt);
+                    if (existeCliente) {
+                        alertify.error("El cliente ya existe.");
+                        return;
+                    }
+                    
+                    guardarClientes(clientes);
+                    tabla.clear().rows.add(clientes).draw();
+                    $('#modalEditarCliente').modal('hide');
+                    alertify.success("Cliente actualizado correctamente.");
+                }
+            });
+
+            // Evento para eliminar un cliente
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.btn-eliminar')) {
+                    const id = parseInt(e.target.closest('.btn-eliminar').dataset.id);
+                    alertify.confirm("Eliminar cliente", "¿Estás seguro de eliminar este cliente?",
+                        function () {
+                            clientes = clientes.filter(c => c.idcliente !== id);
+                            guardarClientes(clientes);
+                            tabla.clear().rows.add(clientes).draw();
+                            alertify.success("Cliente eliminado correctamente.");
+                        },
+                        function () {
+                            alertify.error("Eliminación cancelada.");
+                        }
+                    ).set('labels', { ok: 'Sí', cancel: 'No' });
+                }
+            });
+
+            const inputRUC = document.getElementById('ciruc');
+            inputRUC.addEventListener('input', () => {
+            let v = inputRUC.value
+                .replace(/[^0-9-]/g, '')        // solo dígitos y guion
+                .replace(/-+/g, '-')            // un solo guion
+                .replace(/^(.+)-(.).*$/, '$1-$2'); // tras el guion, solo un dígito
+            inputRUC.value = v;
+            });
+            inputRUC.addEventListener('blur', () => {
+                const patron = /^\d+(?:-\d)?$/;
+                if (!patron.test(inputRUC.value.trim())) {
+                    inputRUC.setCustomValidity(
+                    'Formato R.U.C. inválido: ej. 12345678 o 12345678-9'
+                    );
+                } else {
+                    inputRUC.setCustomValidity('');
+                }
+                inputRUC.reportValidity();
+            });
+        });
+
+        function cargarTablaClientes() {
+            if ($.fn.DataTable.isDataTable('#tabla_clientes')) {
+                $('#tabla_clientes').DataTable().destroy();
+            }
+
+            tabla = new DataTable("#tabla_clientes", {
+                data: clientes,
+                columns: [
+                    { data: 'idcliente', title: 'Id Clientes' },
+                    { data: 'ciruc', title: 'RUC_CI' },
+                    { data: 'nombre', title: 'Nombre' },
+                    { data: 'apellido', title: 'Apellidos' },
+                    { data: 'direccion', title: 'Dirección' },
+                    { data: 'celular', title: 'Celular' },
+                    {
+                        data: null,
+                        title: 'Acciones',
+                        render: function (data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-warning me-1 btn-editar" data-id="${row.idcliente}"><i class="bi bi-pencil-square"></i></button>
+                                <button class="btn btn-sm btn-danger btn-eliminar" data-id="${row.idcliente}"><i class="bi bi-trash"></i></button>
+                            `;
+                        }
+                    }
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'print',
+                        text: '<i class="bi bi-printer"></i> Imprimir'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="bi bi-filetype-xlsx"></i> Exportar a Excel'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: '<i class="bi bi-filetype-pdf"></i> Exportar a PDF'
+                    },
+                    {
+                        text: '<i class="bi bi-file-earmark-plus"></i> Nuevo cliente',
+                        className: 'btn btn-sm btn-primary',
+                        action: function () {
+                            $('#modalNuevoCliente').modal('show');
+                        }
+                    }
+                ],
+                responsive: true,
+                language: {
+                    url: "dt/es-ES.js"
+                }
+            });
+        }
+
+        function guardarClientes(data) {
+            localStorage.setItem('clientes', JSON.stringify(data));
+            tabla.clear().rows.add(data).draw();
+        }
+
+        function obtenerSiguienteId(clientes) {
+            if (clientes.length === 0) {
+                return 1;
+            } else {
+                const maxId = Math.max(...clientes.map(c => c.idcliente || 0));
+                return maxId + 1;
+            }
+        }
+    </script>
+</body>
+</html>

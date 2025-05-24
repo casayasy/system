@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagos a Proveedores</title>
+    <link rel="icon" type="image/png" href="img/working.png">
+          
+    <!-- ESTILOS DEL MENU -->
+    <link href="menu/styles.css" rel="stylesheet" />
+  
+    <!-- BOOTSTRAP ICONS -->
+    <link rel="stylesheet" href="bt-icons/bootstrap-icons.min.css">
+
+    <!-- DATATABLES -->
+    <link rel="stylesheet" href="dt/datatables.min.css">
+    <link rel="stylesheet" href="dt/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="dt/buttons.dataTables.min.css">
+
+    <!-- ALERTIFYJS -->
+    <link rel="stylesheet" href="alert/alertify.min.css">
+    <link rel="stylesheet" href="alert/themes/default.min.css">
+    <script src="alert/alertify.min.js"></script>
+</head>
+<body>
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand ps-3" href="menu.html">Volver al menú</a>
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="bi bi-list"></i></button>
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-person-fill"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#!">Configuración</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="cerrarSesion()">Cerrar sesión</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <a class="nav-link" href="menu.html">
+                            <div class="sb-nav-link-icon"><i class="bi bi-house-door"></i></div>
+                            Menú Principal
+                        </a>
+                        <a class="nav-link" href="pagoProveedores.html">
+                            <div class="sb-nav-link-icon"><i class="bi bi-cash-stack"></i></div>
+                            Pagos a Proveedores
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Iniciado por:</div>
+                    <div id="usuario">Usuario</div>
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-2">Pagos a Proveedores</h1>
+                    <div class="row">
+                        <table id="tabla_pagos" class="display compact" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Id Proveedor</th>
+                                    <th>Monto</th>
+                                    <th>Fecha</th>
+                                    <th>Metodo</th>
+                                    <th>Banco</th>
+                                    <th>Motivo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Pago -->
+    <div class="modal fade" id="modalNuevoPago" tabindex="-1" aria-labelledby="modalPagoLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <form id="formNuevoPago" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalPagoLabel">Registrar Nuevo Pago</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label">Id Proveedor</label>
+                        <input type="number" id="idproveedor" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Monto</label>
+                        <input type="number" id="monto" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" id="fecha" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Método</label>
+                        <select id="metodo" class="form-control" required>
+                            <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                            <option value="Cheque">Cheque</option>
+                            <option value="Efectivo">Efectivo</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Banco</label>
+                        <input type="text" id="banco" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Motivo</label>
+                        <input type="text" id="motivo" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Pago</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+  <!-- Importar el archivo JavaScript -->
+  <script src="js/menu.js"></script>
+  <script src="js/bdP.js"></script>
+  <script src="js/sistemFunctions.js"></script>
+  <script src="menu/bootstrap.bundle.min.js"></script>
+  <script src="menu/scripts.js"></script>
+  <!-- DATATABLES -->
+  <script src="dt/jquery-3.7.1.js"></script>
+  <script src="dt/datatables.min.js"></script>
+  <script src="dt/jquery.dataTables.min.js"></script>
+  <!-- DATATABLES Buttons extension -->
+  <script src="dt/dataTables.buttons.min.js"></script>
+  <script src="dt/buttons.print.min.js"></script>
+  <script src="dt/buttons.html5.min.js"></script>
+  <!-- DATATABLES JSZip y pdfmake para exportar -->
+  <script src="dt/jszip.min.js"></script>
+  <script src="dt/pdfmake.min.js"></script>
+  <script src="dt/vfs_fonts.js"></script>
+  <!-- DATATABLES Idioma Español -->
+  <script src="dt/es-ES.js"></script>
+
+
+<script>
+
+    if(!sessionStorage.getItem("sesionActiva")){
+        localStorage.removeItem("nomUsuario");
+        localStorage.removeItem("rolUsuario");
+        window.location.href = "Pagerror.html";
+    }
+
+         // obtiene el array de objetos desde el localstorage
+         var usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+        document.getElementById('usuario').textContent = localStorage.getItem("nomUsuario") || "Usuario";
+
+
+        let pagosProveedores = JSON.parse(localStorage.getItem("pagosProveedores")) || [];
+        let tabla;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarTablaPagos();
+
+            // Evento para agregar un nuevo pago
+            document.getElementById('formNuevoPago').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const nuevoPago = {
+                    idpago: obtenerSiguienteId(pagosProveedores),
+                    idproveedor: parseInt(document.getElementById('idproveedor').value),
+                    monto: parseFloat(document.getElementById('monto').value),
+                    fecha: document.getElementById('fecha').value,
+                    metodo: document.getElementById('metodo').value,
+                    banco: document.getElementById('banco').value || null,
+                    motivo: document.getElementById('motivo').value.trim()
+                };
+                pagosProveedores.push(nuevoPago);
+                guardarPagos(pagosProveedores);
+                tabla.row.add(nuevoPago).draw();
+                this.reset();
+                $('#modalNuevoPago').modal('hide');
+                alertify.success("Pago registrado correctamente.");
+            });
+
+            // Evento para eliminar un pago
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.btn-eliminar')) {
+                    const id = parseInt(e.target.closest('.btn-eliminar').dataset.id);
+                    alertify.confirm("Eliminar pago", "¿Estás seguro de eliminar este pago?",
+                        function () {
+                            pagosProveedores = pagosProveedores.filter(p => p.idpago !== id);
+                            guardarPagos(pagosProveedores);
+                            tabla.clear().rows.add(pagosProveedores).draw();
+                            alertify.success("Pago eliminado correctamente.");
+                        },
+                        function () {
+                            alertify.error("Eliminación cancelada.");
+                        }
+                    ).set('labels', { ok: 'Sí', cancel: 'No' });
+                }
+            });
+        });
+
+        function cargarTablaPagos() {
+            if ($.fn.DataTable.isDataTable('#tabla_pagos')) {
+                $('#tabla_pagos').DataTable().destroy();
+            }
+
+            tabla = new DataTable("#tabla_pagos", {
+                data: pagosProveedores,
+                columns: [
+                    { data: 'idproveedor', title: 'Id Proveedor' },
+                    { data: 'monto', title: 'Monto' },
+                    { data: 'fecha', title: 'Fecha' },
+                    { data: 'metodo', title: 'Método' },
+                    { data: 'banco', title: 'Banco' },
+                    { data: 'motivo', title: 'Motivo' },
+                    {
+                        data: null,
+                        title: 'Acciones',
+                        render: function (data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-danger btn-eliminar" data-id="${row.idpago}"><i class="bi bi-trash"></i></button>
+                            `;
+                        }
+                    }
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'print',
+                        text: '<i class="bi bi-printer"></i> Imprimir'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="bi bi-filetype-xlsx"></i> Exportar a Excel'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: '<i class="bi bi-filetype-pdf"></i> Exportar a PDF'
+                    },
+                    {
+                        text: '<i class="bi bi-file-earmark-plus"></i> Nuevo pago',
+                        className: 'btn btn-sm btn-primary',
+                        action: function () {
+                            $('#modalNuevoPago').modal('show');
+                        }
+                    }
+                ],
+                responsive: true,
+                language: {
+                    url: "dt/es-ES.js"
+                }
+            });
+        }
+
+        function guardarPagos(data) {
+            localStorage.setItem('pagosProveedores', JSON.stringify(data));
+            tabla.clear().rows.add(data).draw();
+        }
+
+        function obtenerSiguienteId(pagos) {
+            if (pagos.length === 0) {
+                return 1;
+            } else {
+                const maxId = Math.max(...pagos.map(p => p.idpago || 0));
+                return maxId + 1;
+            }
+        }
+    </script>
+</body>
+</html>
